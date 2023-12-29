@@ -27,11 +27,18 @@ class SGMk2:
 
         client = mqtt_client.Client(client_id)
         client.on_connect = on_connect
+        client.on_message = self.on_message
         client.will_set("sgmk2-cv/status", "offline", retain=True)
         client.connect(broker, port)
+        client.subscribe("sgmk2/status")
         client.loop_start()
 
         return client
+
+    def on_message(self, client, userdata, msg):
+        self.rof = 0
+        self.autoaim = False
+        self.laser = False
 
     def flywheel(self, value):
         if value:
